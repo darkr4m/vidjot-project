@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 const Idea = mongoose.model('ideas');
 
-router.get('/ideas', (req,res) => {
+router.get('/ideas/add', (req,res) => {
     res.render('ideas/add');
 });
 
@@ -30,6 +30,7 @@ router.post('/ideas', (req,res) => {
     new Idea(newUser)
       .save()
       .then(idea => {
+        req.flash('success_msg', 'Hopefully this idea is a good one!');
         res.redirect('/ideas');
       })
   }

@@ -24,6 +24,7 @@ router.put('/ideas/:id', (req,res) => {
     idea.details = req.body.details;
     idea.save()
     .then(idea => {
+      req.flash('success_msg', 'Idea updated.');
       res.redirect('/ideas');
     })
   })
@@ -32,6 +33,7 @@ router.put('/ideas/:id', (req,res) => {
 router.delete('/ideas/:id', (req,res) => {
   Idea.remove({ _id: req.params.id})
   .then(() => {
+    req.flash('success_msg', 'Bad idea removed...');
     res.redirect('/ideas');
   })
 });

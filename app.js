@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const exphbs = require('express-handlebars');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
+const flash = require('connect-flash');
+const session = require('express-session');
 
 const app = express();
 
@@ -30,6 +32,25 @@ app.use(bodyParser.json());
 
 //method override Middleware
 app.use(methodOverride('_method'));
+
+//Express-session Middleware
+app.use(session({
+  secret:'keyboard cat',
+  resave: true,
+  saveUninitialized: true,
+  // cookie: { secure: true }
+}));
+
+//flash middleware
+app.use(flash());
+
+//global variables
+app.use((req,res,next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  next();
+})
 
 //routes
 app.use(require('./routes/index'));
