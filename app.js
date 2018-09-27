@@ -55,6 +55,8 @@ app.use((req,res,next) => {
 //routes
 app.use(require('./routes/index'));
 app.use(require('./routes/about'));
+app.use(require('./routes/login'));
+app.use(require('./routes/register'));
 app.use(require('./routes/ideasRoutes/index'));
 app.use(require('./routes/ideasRoutes/add'));
 app.use(require('./routes/ideasRoutes/edit'));
