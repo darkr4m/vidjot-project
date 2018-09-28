@@ -4,9 +4,12 @@ const mongoose = require('mongoose');
 
 const Idea = mongoose.model('ideas');
 
+//load authentication
+const {ensureAuthenticated} = require('../helpers/auth');
+
 //IDEA INDEX
-router.get('/ideas', (req,res) => {
-  Idea.find({})
+router.get('/ideas', ensureAuthenticated, (req,res) => {
+  Idea.find({user: req.user.id})
     .sort({date: 'desc'})
     .then(ideas => {
       res.render('ideas/index', {
@@ -16,12 +19,12 @@ router.get('/ideas', (req,res) => {
 });
 
 //ADD IDEAS ROUTE
-router.get('/ideas/add', (req,res) => {
+router.get('/ideas/add', ensureAuthenticated, (req,res) => {
     res.render('ideas/add');
 });
 
 //ADD IDEAS POST AND VALIDATION
-router.post('/ideas', (req,res) => {
+router.post('/ideas', ensureAuthenticated, (req,res) => {
   let errors = [];
   if(!req.body.title){
     errors.push({ text: 'Please add a title.' })
@@ -38,7 +41,8 @@ router.post('/ideas', (req,res) => {
   } else {
     const newUser = {
       title: req.body.title,
-      details: req.body.details
+      details: req.body.details,
+      user: req.user.id
     }
     new Idea(newUser)
       .save()
@@ -50,18 +54,23 @@ router.post('/ideas', (req,res) => {
 });
 
 //EDIT UPDATE
-router.get('/ideas/edit/:id', (req,res) => {
+router.get('/ideas/edit/:id', ensureAuthenticated, (req,res) => {
   Idea.findOne({
     _id: req.params.id
   })
   .then(idea => {
-    res.render('ideas/edit', {
-      idea:idea
-    });
+    if(idea.user != req.user.id){
+      req.flash('error_msg', 'You are not authorized to do this.');
+      res.redirect('/ideas');
+    } else {
+      res.render('ideas/edit', {
+        idea:idea
+      });
+    }
   })
 });
 
-router.put('/ideas/:id', (req,res) => {
+router.put('/ideas/:id', ensureAuthenticated, (req,res) => {
   Idea.findOne({
     _id: req.params.id
   })
@@ -77,7 +86,7 @@ router.put('/ideas/:id', (req,res) => {
 });
 
 //DELETE
-router.delete('/ideas/:id', (req,res) => {
+router.delete('/ideas/:id', ensureAuthenticated, (req,res) => {
   Idea.deleteOne({ _id: req.params.id})
   .then(() => {
     req.flash('success_msg', 'Bad idea removed...');

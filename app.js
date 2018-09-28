@@ -14,10 +14,10 @@ const app = express();
 mongoose.promise = global.Promise;
 
 //connect to mongoose
-const dbUrl = 'mongodb://127.0.0.1:27017/ideas';
-mongoose.connect(dbUrl, { useNewUrlParser: true })
+const dbUrl = require('./config/database');
+mongoose.connect(dbUrl.mongoURI, { useNewUrlParser: true })
   .then(() => {
-  console.log(`MongoDB connected at ${dbUrl}.`);
+  console.log(`MongoDB connected at ${dbUrl.mongoURI}.`);
 }).catch(err => console.log(err));
 
 //passport config
