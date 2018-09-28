@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const mongoose = require('mongoose');
 const exphbs = require('express-handlebars');
 const bodyParser = require('body-parser');
@@ -21,6 +22,9 @@ mongoose.connect(dbUrl, { useNewUrlParser: true })
 //load Models
 require('./models/Idea')
 const Idea = mongoose.model('ideas');
+
+//Static folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 //Handlebars Middleware
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
@@ -55,11 +59,8 @@ app.use((req,res,next) => {
 //routes
 app.use(require('./routes/index'));
 app.use(require('./routes/about'));
-app.use(require('./routes/login'));
-app.use(require('./routes/register'));
-app.use(require('./routes/ideasRoutes/index'));
-app.use(require('./routes/ideasRoutes/add'));
-app.use(require('./routes/ideasRoutes/edit'));
+app.use(require('./routes/users'));
+app.use(require('./routes/ideas'));
 
 const port = process.env.PORT || 3000;
 
