@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const passport = require('passport');
 const exphbs = require('express-handlebars');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
@@ -18,6 +19,9 @@ mongoose.connect(dbUrl, { useNewUrlParser: true })
   .then(() => {
   console.log(`MongoDB connected at ${dbUrl}.`);
 }).catch(err => console.log(err));
+
+//passport config
+require('./config/passport')(passport);
 
 //load Models
 require('./models/Idea')
@@ -45,6 +49,10 @@ app.use(session({
   // cookie: { secure: true }
 }));
 
+//passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
 //flash middleware
 app.use(flash());
 
@@ -53,6 +61,7 @@ app.use((req,res,next) => {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
+  res.locals.user = req.user || null;
   next();
 })
 
